@@ -6,13 +6,13 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAK5-_fEoSjboghVjI_fdABieK9CAIdOyQ",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "habit-tracker-9b38e.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "habit-tracker-9b38e",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "habit-tracker-9b38e.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "132986672647",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:132986672647:web:28ded9b5c7dc11b85abca2",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-7197R4KZX7"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
