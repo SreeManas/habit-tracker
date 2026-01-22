@@ -3,6 +3,11 @@ import { useAuth } from '../hooks/useAuth';
 import { HabitCard } from '../components/HabitCard';
 import { NotificationSettings } from '../components/NotificationSettings';
 import { ResetButton } from '../components/ResetButton';
+import { WeeklyProgressChart } from '../components/charts/WeeklyProgressChart';
+import { HabitCompletionChart } from '../components/charts/HabitCompletionChart';
+import { StreakBarChart } from '../components/charts/StreakBarChart';
+import { IdentityTrendChart } from '../components/charts/IdentityTrendChart';
+import { DailyScoreChart } from '../components/charts/DailyScoreChart';
 
 export const Stats = () => {
   const { user, userData } = useAuth();
@@ -10,7 +15,9 @@ export const Stats = () => {
     getTodayStats, 
     getWeeklyStats, 
     getHabitStreaks, 
-    getLevelInfo 
+    getLevelInfo,
+    dailyLogs,
+    habits
   } = useStats();
   
   const todayStats = getTodayStats();
@@ -114,6 +121,36 @@ export const Stats = () => {
         </div>
       </div>
 
+      <div className="charts-section">
+        <h2>Visual Analytics</h2>
+        
+        <div className="charts-grid">
+          <div className="chart-card">
+            <h3>Weekly Progress</h3>
+            <p className="chart-description">Completion % and Daily Score over the last 7 days</p>
+            <WeeklyProgressChart dailyLogs={dailyLogs} habits={habits} />
+          </div>
+
+          <div className="chart-card">
+            <h3>Today's Habit Status</h3>
+            <p className="chart-description">Distribution of completed, missed, and pending habits</p>
+            <HabitCompletionChart habits={habits} dailyLogs={dailyLogs} />
+          </div>
+
+          <div className="chart-card">
+            <h3>Daily Scores</h3>
+            <p className="chart-description">Your daily scores for the last 7 days</p>
+            <DailyScoreChart dailyLogs={dailyLogs} habits={habits} />
+          </div>
+
+          <div className="chart-card">
+            <h3>Identity Score Trend</h3>
+            <p className="chart-description">Cumulative identity score over the last 14 days</p>
+            <IdentityTrendChart dailyLogs={dailyLogs} />
+          </div>
+        </div>
+      </div>
+
       <div className="streaks-section">
         <h2>Habit Streaks</h2>
         {habitStreaks.length === 0 ? (
@@ -121,25 +158,32 @@ export const Stats = () => {
             <p>No habits yet. Create habits to start tracking streaks.</p>
           </div>
         ) : (
-          <div className="streaks-grid">
-            {habitStreaks.map(habit => (
-              <div key={habit.id} className="streak-card">
-                <h3>{habit.name}</h3>
-                <div className="streak-info">
-                  <div className="streak-item">
-                    <span className="streak-label">Current Streak</span>
-                    <span className="streak-value">🔥 {habit.streak}</span>
-                  </div>
-                  {habit.comebackStreak > 0 && (
+          <>
+            <div className="chart-card">
+              <h3>Top Streaks</h3>
+              <p className="chart-description">Current and comeback streaks for your habits</p>
+              <StreakBarChart habitStreaks={habitStreaks} />
+            </div>
+            <div className="streaks-grid">
+              {habitStreaks.map(habit => (
+                <div key={habit.id} className="streak-card">
+                  <h3>{habit.name}</h3>
+                  <div className="streak-info">
                     <div className="streak-item">
-                      <span className="streak-label">Comeback Streak</span>
-                      <span className="streak-value comeback">⚡ {habit.comebackStreak}</span>
+                      <span className="streak-label">Current Streak</span>
+                      <span className="streak-value">🔥 {habit.streak}</span>
                     </div>
-                  )}
+                    {habit.comebackStreak > 0 && (
+                      <div className="streak-item">
+                        <span className="streak-label">Comeback Streak</span>
+                        <span className="streak-value comeback">⚡ {habit.comebackStreak}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 

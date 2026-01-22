@@ -164,6 +164,7 @@ export const useStats = () => {
     getWeeklyStats,
     getHabitStreaks,
     getLevelInfo,
-    identityScore: userData?.identityScore || 0
+    identityScore: userData?.identityScore || 0,
+    userData
   };
 };
