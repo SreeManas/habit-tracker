@@ -7,7 +7,10 @@ export const DailyScoreChart = ({ dailyLogs, habits }) => {
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
       days.push(dateStr);
     }
     return days;
@@ -31,7 +34,7 @@ export const DailyScoreChart = ({ dailyLogs, habits }) => {
       }
 
       const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'short' });
-      
+
       return {
         date: dayName,
         fullDate: date,
@@ -62,18 +65,18 @@ export const DailyScoreChart = ({ dailyLogs, habits }) => {
     <ResponsiveContainer width="100%" height={250}>
       <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-        <XAxis 
-          dataKey="date" 
+        <XAxis
+          dataKey="date"
           stroke="#a0a0a0"
           style={{ fontSize: '12px' }}
         />
-        <YAxis 
+        <YAxis
           stroke="#a0a0a0"
           style={{ fontSize: '12px' }}
         />
-        <Tooltip 
-          contentStyle={{ 
-            backgroundColor: '#1a1a1a', 
+        <Tooltip
+          contentStyle={{
+            backgroundColor: '#1a1a1a',
             border: '1px solid #2a2a2a',
             borderRadius: '6px',
             color: '#e0e0e0'

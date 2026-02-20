@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import {
   requestNotificationPermission,
-  getFCMToken,
   saveFCMToken,
   removeFCMToken,
   setupForegroundMessageListener,
@@ -24,22 +23,49 @@ export const useNotifications = () => {
 
   useEffect(() => {
     if (!user) {
-      setLoading(false);
       return;
     }
+
+    const loadSettings = async () => {
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          if (data.notificationSettings) {
+            setNotificationSettings(data.notificationSettings);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading notification settings:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const initNotifications = async () => {
+      try {
+        const token = await requestNotificationPermission();
+        if (token) {
+          setFcmToken(token);
+          await saveFCMToken(user.uid, token);
+        }
+      } catch (error) {
+        console.error('Error initializing notifications:', error);
+      }
+    };
 
     // Check permission status
     const currentPermission = getNotificationPermission();
     setPermission(currentPermission);
 
     // Load notification settings
-    loadNotificationSettings();
+    loadSettings();
 
     // Request permission and get token if not already granted
-    if (currentPermission === 'default') {
-      initializeNotifications();
-    } else if (currentPermission === 'granted') {
-      initializeNotifications();
+    if (currentPermission !== 'denied') {
+      initNotifications();
     }
 
     // Setup foreground message listener
@@ -52,41 +78,7 @@ export const useNotifications = () => {
     };
   }, [user]);
 
-  const loadNotificationSettings = async () => {
-    if (!user) return;
-
-    try {
-      const userRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userRef);
-      
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        if (data.notificationSettings) {
-          setNotificationSettings(data.notificationSettings);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading notification settings:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const initializeNotifications = async () => {
-    if (!user) return;
-
-    try {
-      const token = await requestNotificationPermission();
-      if (token) {
-        setFcmToken(token);
-        await saveFCMToken(user.uid, token);
-      }
-    } catch (error) {
-      console.error('Error initializing notifications:', error);
-    }
-  };
-
-  const updateNotificationSettings = async (newSettings) => {
+  const updateNotificationSettings = useCallback(async (newSettings) => {
     if (!user) return;
 
     try {
@@ -99,9 +91,9 @@ export const useNotifications = () => {
       console.error('Error updating notification settings:', error);
       throw error;
     }
-  };
+  }, [user]);
 
-  const enableNotifications = async () => {
+  const enableNotifications = useCallback(async () => {
     const token = await requestNotificationPermission();
     if (token) {
       setFcmToken(token);
@@ -116,9 +108,9 @@ export const useNotifications = () => {
     } else {
       setPermission('denied');
     }
-  };
+  }, [user, notificationSettings, updateNotificationSettings]);
 
-  const disableNotifications = async () => {
+  const disableNotifications = useCallback(async () => {
     if (user && fcmToken) {
       await removeFCMToken(user.uid, fcmToken);
     }
@@ -126,7 +118,7 @@ export const useNotifications = () => {
       ...notificationSettings,
       enabled: false
     });
-  };
+  }, [user, fcmToken, notificationSettings, updateNotificationSettings]);
 
   return {
     permission,

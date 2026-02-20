@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useNotifications } from './hooks/useNotifications';
 import { Navbar } from './components/Navbar';
@@ -12,7 +11,7 @@ import './App.css';
 
 function App() {
   const { user, loading } = useAuth();
-  const { permission } = useNotifications(); // Initialize notifications
+  useNotifications(); // Initialize notifications
 
   if (loading) {
     return (
@@ -28,9 +27,9 @@ function App() {
         {user && <Navbar />}
         <main className="main-content">
           <Routes>
-            <Route 
-              path="/login" 
-              element={user ? <Navigate to="/dashboard" replace /> : <Login />} 
+            <Route
+              path="/login"
+              element={user ? <Navigate to="/dashboard" replace /> : <Login />}
             />
             <Route
               path="/dashboard"

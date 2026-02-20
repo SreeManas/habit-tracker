@@ -1,7 +1,8 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 export const HabitCompletionChart = ({ habits, dailyLogs }) => {
-  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const todayLog = dailyLogs[today];
 
   const prepareData = () => {
@@ -58,15 +59,15 @@ export const HabitCompletionChart = ({ habits, dailyLogs }) => {
             <Cell key={`cell-${index}`} fill={COLORS[entry.name]} />
           ))}
         </Pie>
-        <Tooltip 
-          contentStyle={{ 
-            backgroundColor: '#1a1a1a', 
+        <Tooltip
+          contentStyle={{
+            backgroundColor: '#1a1a1a',
             border: '1px solid #2a2a2a',
             borderRadius: '6px',
             color: '#e0e0e0'
           }}
         />
-        <Legend 
+        <Legend
           wrapperStyle={{ color: '#a0a0a0', fontSize: '12px' }}
         />
       </PieChart>

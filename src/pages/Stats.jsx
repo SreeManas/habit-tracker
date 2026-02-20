@@ -8,6 +8,7 @@ import { HabitCompletionChart } from '../components/charts/HabitCompletionChart'
 import { StreakBarChart } from '../components/charts/StreakBarChart';
 import { IdentityTrendChart } from '../components/charts/IdentityTrendChart';
 import { DailyScoreChart } from '../components/charts/DailyScoreChart';
+import { ContributionHeatMap } from '../components/charts/ContributionHeatMap';
 
 export const Stats = () => {
   const { user, userData } = useAuth();
@@ -123,6 +124,10 @@ export const Stats = () => {
 
       <div className="charts-section">
         <h2>Visual Analytics</h2>
+        
+        <div className="chart-card full-width">
+          <ContributionHeatMap dailyLogs={dailyLogs} habits={habits} />
+        </div>
         
         <div className="charts-grid">
           <div className="chart-card">

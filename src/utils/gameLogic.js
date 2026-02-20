@@ -52,11 +52,11 @@ export const calculateDailyScore = (habits, dailyLog) => {
 export const calculateStreak = (habitId, dailyLogs) => {
   let streak = 0;
   const sortedLogs = Object.entries(dailyLogs)
-    .filter(([_, log]) => log.habits && log.habits[habitId] === true)
+    .filter(([, log]) => log.habits && log.habits[habitId] === true)
     .sort(([a], [b]) => new Date(b) - new Date(a));
 
-  for (const [date, log] of sortedLogs) {
-    const logDate = new Date(date);
+  for (const [dateStr] of sortedLogs) {
+    const logDate = new Date(dateStr);
     const expectedDate = new Date();
     expectedDate.setDate(expectedDate.getDate() - streak);
     expectedDate.setHours(0, 0, 0, 0);
@@ -72,29 +72,33 @@ export const calculateStreak = (habitId, dailyLogs) => {
   return streak;
 };
 
-// Calculate comeback streak (after a failure)
+// Calculate comeback streak (consecutive successes after the most recent failure)
 export const calculateComebackStreak = (habitId, dailyLogs) => {
   let comebackStreak = 0;
   let foundFailure = false;
   const sortedLogs = Object.entries(dailyLogs)
     .sort(([a], [b]) => new Date(b) - new Date(a));
 
-  for (const [date, log] of sortedLogs) {
+  for (const [, log] of sortedLogs) {
     const status = log.habits?.[habitId];
     if (status === false) {
       foundFailure = true;
-      break;
-    } else if (status === true && foundFailure) {
+      break; // Stop counting once we hit the failure
+    } else if (status === true) {
       comebackStreak++;
     }
   }
 
+  // Only return a comeback streak if there was a failure before the successes
   return foundFailure ? comebackStreak : 0;
 };
 
-// Get date string in YYYY-MM-DD format
+// Get date string in YYYY-MM-DD format (using local time, not UTC)
 export const getDateString = (date = new Date()) => {
-  return date.toISOString().split('T')[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
 // Get week start date (Monday)

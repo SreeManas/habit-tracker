@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { 
-  collection, 
-  query, 
-  where, 
-  onSnapshot, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc 
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from './useAuth';
@@ -19,8 +19,6 @@ export const useHabits = () => {
 
   useEffect(() => {
     if (!user) {
-      setHabits([]);
-      setLoading(false);
       return;
     }
 

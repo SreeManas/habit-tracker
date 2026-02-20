@@ -3,7 +3,7 @@ import { useDailyRun } from '../hooks/useDailyRun';
 import { useStats } from '../hooks/useStats';
 import { HabitCard } from '../components/HabitCard';
 import { IdentityQuestion } from '../components/IdentityQuestion';
-import { calculateDailyScore } from '../utils/gameLogic';
+
 
 export const Dashboard = () => {
   const { habits, loading: habitsLoading } = useHabits();
@@ -40,7 +40,7 @@ export const Dashboard = () => {
               <>
                 <span>{todayStats.completed}/{todayStats.total}</span>
                 <div className="progress-bar">
-                  <div 
+                  <div
                     className="progress-fill"
                     style={{ width: `${todayStats.percentage}%` }}
                   ></div>
@@ -56,7 +56,7 @@ export const Dashboard = () => {
           <span className="level-text">Level {levelInfo.level}</span>
           <div className="xp-bar-container">
             <div className="xp-bar">
-              <div 
+              <div
                 className="xp-fill"
                 style={{ width: `${levelInfo.percentage}%` }}
               ></div>

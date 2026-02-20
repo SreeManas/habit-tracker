@@ -23,7 +23,31 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^_' }],
+    },
+  },
+  // Cloud Functions (Node.js / CommonJS)
+  {
+    files: ['functions/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        require: 'readonly',
+        exports: 'writable',
+        module: 'readonly',
+      },
+      sourceType: 'commonjs',
+    },
+  },
+  // Firebase Messaging Service Worker
+  {
+    files: ['public/firebase-messaging-sw.js'],
+    languageOptions: {
+      globals: {
+        ...globals.serviceworker,
+        firebase: 'readonly',
+        importScripts: 'readonly',
+      },
     },
   },
 ])

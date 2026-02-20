@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNotifications } from '../hooks/useNotifications';
 
 export const NotificationSettings = () => {
@@ -13,6 +13,11 @@ export const NotificationSettings = () => {
 
   const [localSettings, setLocalSettings] = useState(notificationSettings);
   const [saving, setSaving] = useState(false);
+
+  // Sync local state when server settings load/change
+  useEffect(() => {
+    setLocalSettings(notificationSettings);
+  }, [notificationSettings]);
 
   const handleTimeChange = (index, newTime) => {
     const newTimes = [...localSettings.reminderTimes];

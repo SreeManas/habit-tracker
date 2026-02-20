@@ -1,19 +1,16 @@
 import { useState, useEffect } from 'react';
-import { 
-  collection, 
-  query, 
-  where, 
-  onSnapshot,
-  doc,
-  getDoc,
-  updateDoc
+import {
+  collection,
+  query,
+  where,
+  onSnapshot
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from './useAuth';
-import { 
-  calculateLevel, 
-  getXPProgress, 
-  calculateStreak, 
+import {
+  calculateLevel,
+  getXPProgress,
+  calculateStreak,
   calculateComebackStreak,
   getWeekRange,
   getDateString
@@ -108,7 +105,7 @@ export const useStats = () => {
     let daysWithIdentity = 0;
     let identityYes = 0;
 
-    weekLogs.forEach(([date, log]) => {
+    weekLogs.forEach(([, log]) => {
       habits.forEach(habit => {
         totalHabits++;
         const status = log.habits?.[habit.id];

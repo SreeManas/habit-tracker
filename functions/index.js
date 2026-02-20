@@ -20,11 +20,11 @@ admin.initializeApp();
 exports.sendDailyReminders = functions.pubsub
   .schedule('0 18,21,0 * * *') // 6pm, 9pm, 12am daily
   .timeZone('America/New_York') // Change to your timezone
-  .onRun(async (context) => {
+  .onRun(async (_context) => {
     const db = admin.firestore();
     const now = new Date();
     const currentHour = now.getHours();
-    
+
     // Determine which reminder time this is
     let reminderTime;
     if (currentHour === 18) reminderTime = '18:00';
@@ -39,7 +39,7 @@ exports.sendDailyReminders = functions.pubsub
         .where('notificationSettings.dailyReminders', '==', true)
         .get();
 
-      const batch = db.batch();
+
       const messages = [];
 
       for (const userDoc of usersSnapshot.docs) {
@@ -61,7 +61,7 @@ exports.sendDailyReminders = functions.pubsub
         const today = new Date().toISOString().split('T')[0];
         const todayLogRef = db.collection('dailyLogs').doc(`${userDoc.id}_${today}`);
         const todayLog = await todayLogRef.get();
-        
+
         const habits = habitsSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -97,7 +97,7 @@ exports.sendDailyReminders = functions.pubsub
 
       // Send all notifications
       if (messages.length > 0) {
-        const responses = await admin.messaging().sendAll(messages);
+        const responses = await admin.messaging().sendEach(messages);
         console.log(`Sent ${responses.successCount} notifications`);
       }
 
@@ -115,7 +115,7 @@ exports.sendDailyReminders = functions.pubsub
 exports.sendHabitReminders = functions.pubsub
   .schedule('0 * * * *') // Every hour
   .timeZone('America/New_York') // Change to your timezone
-  .onRun(async (context) => {
+  .onRun(async (_context) => {
     const db = admin.firestore();
     const now = new Date();
     const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -132,7 +132,7 @@ exports.sendHabitReminders = functions.pubsub
 
       for (const habitDoc of habitsSnapshot.docs) {
         const habit = habitDoc.data();
-        
+
         // Get user
         const userDoc = await db.collection('users').doc(habit.userId).get();
         if (!userDoc.exists) continue;
@@ -147,7 +147,7 @@ exports.sendHabitReminders = functions.pubsub
         const today = new Date().toISOString().split('T')[0];
         const todayLogRef = db.collection('dailyLogs').doc(`${habit.userId}_${today}`);
         const todayLog = await todayLogRef.get();
-        
+
         const status = todayLog.exists() ? todayLog.data().habits?.[habitDoc.id] : null;
         if (status === true) continue; // Already completed
 
@@ -174,7 +174,7 @@ exports.sendHabitReminders = functions.pubsub
 
       // Send all notifications
       if (messages.length > 0) {
-        const responses = await admin.messaging().sendAll(messages);
+        const responses = await admin.messaging().sendEach(messages);
         console.log(`Sent ${responses.successCount} habit reminder notifications`);
       }
 

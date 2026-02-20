@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { 
-  doc, 
-  setDoc, 
+import {
+  doc,
+  setDoc,
   onSnapshot
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
@@ -19,8 +19,6 @@ export const useDailyRun = () => {
 
   useEffect(() => {
     if (!user) {
-      setTodayLog(null);
-      setLoading(false);
       return;
     }
 
@@ -69,10 +67,10 @@ export const useDailyRun = () => {
     try {
       const today = getDateString();
       const logRef = doc(db, 'dailyLogs', `${user.uid}_${today}`);
-      
+
       const previousStatus = todayLog.habits?.[habitId];
       const habit = habits.find(h => h.id === habitId);
-      
+
       if (!habit) {
         console.error('Habit not found:', habitId);
         return;
@@ -90,20 +88,18 @@ export const useDailyRun = () => {
         userId: user.uid
       };
 
-      console.log('Saving habit status:', { habitId, status, newLog });
       await setDoc(logRef, newLog, { merge: true });
-      console.log('Habit status saved successfully');
 
       // Calculate XP change
       let xpChange = 0;
-      
+
       // Remove previous XP if status changed
       if (previousStatus === true) {
         xpChange -= habit.xp;
       } else if (previousStatus === false) {
         xpChange += habit.penalty; // Remove penalty
       }
-      
+
       // Add new XP
       if (status === true) {
         xpChange += habit.xp;
@@ -111,13 +107,11 @@ export const useDailyRun = () => {
         xpChange -= habit.penalty;
       }
 
-      console.log('XP change:', xpChange);
+
 
       // Update user XP
       if (xpChange !== 0) {
-        console.log('Updating user XP...');
         await updateUserXP(user.uid, xpChange);
-        console.log('User XP updated');
       }
 
       setTodayLog(newLog);
@@ -144,7 +138,7 @@ export const useDailyRun = () => {
 
       const previousAnswer = todayLog.identityAnswer;
       setIdentityAnswer(answer);
-      
+
       const newLog = {
         ...todayLog,
         identityAnswer: answer,
@@ -152,34 +146,28 @@ export const useDailyRun = () => {
         userId: user.uid
       };
 
-      console.log('Saving identity answer:', { answer, newLog });
       await setDoc(logRef, newLog, { merge: true });
-      console.log('Identity answer saved successfully');
 
       // Update identity score if changed
       if (previousAnswer !== answer) {
         let scoreChange = 0;
-        
+
         // Remove previous answer's effect
         if (previousAnswer === true) {
           scoreChange -= 1; // Remove +1 from previous yes
         } else if (previousAnswer === false) {
           scoreChange += 1; // Remove -1 from previous no (add it back)
         }
-        
+
         // Add new answer's effect
         if (answer === true) {
           scoreChange += 1; // Add +1 for yes
         } else if (answer === false) {
           scoreChange -= 1; // Add -1 for no
         }
-        
-        console.log('Identity score change:', scoreChange);
-        
+
         if (scoreChange !== 0) {
-          console.log('Updating identity score...');
           await updateIdentityScore(user.uid, scoreChange);
-          console.log('Identity score updated');
         }
       }
 
